@@ -1,0 +1,128 @@
+File Name,Table,File Type,Field Name,Description,Data Type,Character length,Acceptable values,Required?,Accepts null value?
+Food Description,FOOD_DES,Primary,NDB_No,5-digit Nutrient Databank number that uniquely identifies a food item. If this field is defined as numeric the leading zero will be lost.,character,5,,y,n
+Food Description,FOOD_DES,Primary,FdGrp_Cd,4-digit code indicating food group to which a food item belongs.,character,4,,y,n
+Food Description,FOOD_DES,Primary,Long_Desc,200-character description of food item.,character,200,,y,n
+Food Description,FOOD_DES,Primary,Shrt_Desc,60-character abbreviated description of food item. Generated from the 200-character description using abbreviations in Appendix A. If short description is longer than 60 characters additional abbreviations are made. ,character,60,,y,n
+Food Description,FOOD_DES,Primary,ComName,Other names commonly used to describe a food including local or regional names for various foods e.g. soda or pop for carbonated beverages.,character,100,,n,y
+Food Description,FOOD_DES,Primary,ManufacName,Company that manufactured the product when appropriate. ,character,65,,n,y
+Food Description,FOOD_DES,Primary,Survey,If the food item is used in the USDA Food and Nutrient Database for Dietary Studies (FNDDS) and thus has a complete nutrient profile for the 65 FNDDS nutrients.,binary,1,Y | <null>,n,y
+Food Description,FOOD_DES,Primary,Ref_desc,Description of inedible parts of a food item (refuse) such as seeds or bone.,character,135,,n,y
+Food Description,FOOD_DES,Primary,Refuse,Percentage of refuse.,numeric,2,0 to 99,n,y
+Food Description,FOOD_DES,Primary,SciName,Scientific name of the food item. Given for the least processed form of the food (usually raw) if applicable. ,character,65,,n,y
+Food Description,FOOD_DES,Primary,N_Factor,Factor for converting nitrogen to protein.,decimal,4,,n,y
+Food Description,FOOD_DES,Primary,Pro_Factor,Factor for calculating calories from protein.,decimal,4,,n,y
+Food Description,FOOD_DES,Primary,Fat_Factor,Factor for calculating calories from fat.,decimal,4,,n,y
+Food Description,FOOD_DES,Primary,CHO_Factor,Factor for calculating calories from carbohydrate.,decimal,4,,n,y
+Nutrient Data,NUT_DATA,Primary,NDB_No,5-digit Nutrient Databank number.,character,5,,y,n
+Nutrient Data,NUT_DATA,Primary,Nutr_No,Unique 3-digit identifier code for a nutrient.,character,3,,y,n
+Nutrient Data,NUT_DATA,Primary,Nutr_Val,Amount in 100 grams edible portion. Nutrient values have been rounded to a specified number of decimal places for each nutrient. Number of decimal places is listed in the Nutrient Definition file.,decimal,10,,y,n
+Nutrient Data,NUT_DATA,Primary,Num_Data_Pts,Number of data points (previously called Sample_Ct) is the number of analyses used to calculate the nutrient value. If the number of data points is 0 the value was calculated or imputed. ,numeric,5,,y,n
+Nutrient Data,NUT_DATA,Primary,Std_Error,Standard error of the mean. Null if cannot be calculated. The standard error is also not given if the number of data points is less than three.,decimal,8,,n,y
+Nutrient Data,NUT_DATA,Primary,Src_Cd,Code indicating type of data.,character,2,,y,n
+Nutrient Data,NUT_DATA,Primary,Deriv_Cd,Data Derivation Code giving specific information on how the value is determined. This field is populated only for items added or updated starting with SR14. ,character,4,,n,y
+Nutrient Data,NUT_DATA,Primary,Ref_NDB_No,NDB number of the item used to calculate a missing value. Populated only for items added or updated starting with SR14. ,character,5,,n,y
+Nutrient Data,NUT_DATA,Primary,Add_Nutr_Mark,"Indicates a vitamin or mineral added for fortification
+or enrichment. This field is populated for ready-to-eat breakfast cereals and many brand-name hot cereals in food group 8. ",binary,1,Y | <null>,n,y
+Nutrient Data,NUT_DATA,Primary,Num_Studies,Number of studies.,numeric,2,,n,y
+Nutrient Data,NUT_DATA,Primary,Min,Minimum value. ,decimal,10,,n,y
+Nutrient Data,NUT_DATA,Primary,Max,Maximum value. ,decimal,10,,n,y
+Nutrient Data,NUT_DATA,Primary,DF,Degrees of freedom.,numeric,4,,n,y
+Nutrient Data,NUT_DATA,Primary,Low_EB,Lower 95% error bound.,decimal,10,,n,y
+Nutrient Data,NUT_DATA,Primary,Up_EB,Upper 95% error bound.,decimal,10,,n,y
+Nutrient Data,NUT_DATA,Primary,Stat_cmt,Statistical comments.,character,10,,n,y
+Nutrient Data,NUT_DATA,Primary,AddMod_Date,Indicates when a value was either added to the database or last modified.,date,10,,n,y
+Nutrient Data,NUT_DATA,Primary,CC,Confidence Code indicating data quality based on: evaluation of sample plan; sample handling; analytical method; analytical quality control; and number of samples analyzed. Not included in this release but planned for future releases.,character,1,,n,y
+Gram Weight,WEIGHT,Primary,NDB_No,5-digit Nutrient Databank number.,character,5,,y,n
+Gram Weight,WEIGHT,Primary,Seq,Sequence number.,integer,2,,y,n
+Gram Weight,WEIGHT,Primary,Amount,Unit modifier (e.g. 1 in 1 cup).,decimal,5,,y,n
+Gram Weight,WEIGHT,Primary,Msre_Desc,Description of measure (e.g. cup; diced; 1-inch pieces).,character,84,,y,n
+Gram Weight,WEIGHT,Primary,Gm_Wgt,Gram weight.,decimal,7,,y,n
+Gram Weight,WEIGHT,Primary,Num_Data_Pts,Number of data points.,integer,3,,n,y
+Gram Weight,WEIGHT,Primary,Std_Dev,Standard deviation.,decimal,7,,n,y
+Footnote,FOOTNOTE,Primary,NDB_No,5-digit Nutrient Databank number.,character,5,,y,n
+Footnote,FOOTNOTE,Primary,Footnt_No,Sequence number. If a given footnote applies to more than one nutrient number the same footnote number is used. As a result this file cannot be indexed. ,numeric,4,,y,n
+Footnote,FOOTNOTE,Primary,Footnt_Typ,Type of footnote adding information to (D) food description; (M) measure description; (N) additional information on a nutrient value. If the Footnt_typ = N the Nutr_No will also be filled in. ,character,1,D | M | N,y,n
+Footnote,FOOTNOTE,Primary,Nutr_No,Unique 3-digit identifier code for a nutrient to which footnote applies. ,character,3,,n,y
+Footnote,FOOTNOTE,Primary,Footnt_Txt,Footnote text.,character,200,,y,n
+Food Group Description,FD_GROUP,Support,FdGrp_Cd,4-digit code identifying a food group. Only the first 2 digits are currently assigned. In the future the last 2 digits may be used. Codes may not be consecutive.,character,4,,y,n
+Food Group Description,FD_GROUP,Support,FdGrp_Desc,Name of food group.,character,60,,y,n
+LanguaL Factor,LANGUAL,Support,NDB_No,5-digit Nutrient Databank number that uniquely identifies a food item. If this field is defined as numeric the leading zero will be lost. ,character,5,,y,n
+LanguaL Factor,LANGUAL,Support,Factor_Code,The LanguaL factor from the Thesaurus.,character,5,,y,n
+LanguaL Factor Description,LANGDESC,Support,Factor_Code,The LanguaL factor from the Thesaurus. Only those codes used to factor the foods contained in the LanguaL Factor file are included in this file.,character,5,,y,n
+LanguaL Factor Description,LANGDESC,Support,Description,The description of the LanguaL Factor Code from the thesaurus.,character,140,,y,n
+Nutrient Definition,NUTR_DEF,Support,Nutr_No,Unique 3-digit identifier code for a nutrient.,character,3,,y,n
+Nutrient Definition,NUTR_DEF,Support,Units,Units of measure (mg g µg and so on).,character,7,,y,n
+Nutrient Definition,NUTR_DEF,Support,Tagname,International Network of Food Data Systems (INFOODS) Tagnames. A unique abbreviation for a nutrient/food component developed by INFOODS to aid in the interchange of data.,character,20,,n,y
+Nutrient Definition,NUTR_DEF,Support,NutrDesc,Name of nutrient/food component.,character,60,,y,n
+Nutrient Definition,NUTR_DEF,Support,Num_Dec,Number of decimal places to which a nutrient value is rounded.,integer,1,,y,n
+Nutrient Definition,NUTR_DEF,Support,SR_Order,Used to sort nutrient records in the same order as various reports produced from SR. ,character,6,,y,n
+Source Code,SRC_CD,Support,Src_Cd,2-digit code.,character,2,,y,n
+Source Code,SRC_CD,Support,SrcCd_Desc,Description of source code that identifies the type of nutrient data.,character,60,,y,n
+Data Derivation Code Description,DERIV_CD,Support,Deriv_Cd,Derivation Code.,character,4,,y,n
+Data Derivation Code Description,DERIV_CD,Support,Deriv_Desc,Description of derivation code giving specific information on how the value was determined. ,character,120,,y,n
+Sources of Data,DATA_SRC,Support,DataSrc_ID,Unique number identifying the reference/source.,character,6,,y,n
+Sources of Data,DATA_SRC,Support,Authors,List of authors for a journal article or name of sponsoring organization for other documents. ,character,255,,n,y
+Sources of Data,DATA_SRC,Support,Title,Title of article or name of document such as a report from a company or trade association. ,character,255,,y,n
+Sources of Data,DATA_SRC,Support,Year,Year article or document was published.,date,4,,n,y
+Sources of Data,DATA_SRC,Support,Journal,Name of the journal in which the article was published. ,character,135,,n,y
+Sources of Data,DATA_SRC,Support,Vol_City,Volume number for journal articles books or reports; city where sponsoring organization is located. ,character,16,,n,y
+Sources of Data,DATA_SRC,Support,Issue_State,Issue number for journal article; State where the sponsoring organization is located.,character,5,,n,y
+Sources of Data,DATA_SRC,Support,Start_Page,Starting page number of article/document. ,character,5,,n,y
+Sources of Data,DATA_SRC,Support,End_Page,Ending page number of article/document. ,character,5,,n,y
+Sources of Data Link,DATSRCLN,Support,NDB_No,5-digit Nutrient Databank number that uniquely identifies a food item. If this field is defined as numeric the leading zero will be lost. ,character,5,,y,n
+Sources of Data Link,DATSRCLN,Support,Nutr_No,Unique 3-digit identifier code for a nutrient.,character,3,,n,y
+Sources of Data Link,DATSRCLN,Support,DataSrc_ID,Unique number identifying the reference/source.,character,6,,y,n
+Abbreviated file,ABBREV,ASCII flat file,NDB_No,5-digit Nutrient Databank number that uniquely identifies a food item. If this field is defined as numeric the leading zero will be lost. ,character,5,,y,n
+Abbreviated file,ABBREV,ASCII flat file,Shrt_Desc,60-character abbreviated description of food item. Generated from the 200-character description using abbreviations in Appendix A. If short description is longer than 60 characters additional abbreviations are made. ,character,60,,y,n
+Abbreviated file,ABBREV,ASCII flat file,Water,Water (g/100 g) ,decimal,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Energ_Kcal,Food energy (kcal/100 g) ,numeric,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Protein,Protein (g/100 g) ,decimal,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Lipid_Tot,Total lipid (fat)(g/100 g),decimal,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Ash,Ash (g/100 g) ,decimal,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Carbohydrt,Carbohydrate by difference (g/100 g),decimal,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Fiber_TD,Total dietary fiber (g/100 g),decimal,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Sugar_Tot,Total sugars (g/100 g),decimal,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Calcium,Calcium (mg/100 g),numeric,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Iron,Iron (mg/100 g),decimal,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Magnesium,Magnesium (mg/100 g) ,numeric,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Phosphorus,Phosphorus (mg/100 g),numeric,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Potassium,Potassium (mg/100 g),numeric,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Sodium,Sodium (mg/100 g),numeric,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Zinc,Zinc (mg/100 g),decimal,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Copper,Copper (mg/100 g),decimal,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Manganese,Manganese (mg/100 g),decimal,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Selenium,Selenium (µg/100 g),decimal,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Vit_C,Vitamin C (mg/100 g),decimal,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Thiamin,Thiamin (mg/100 g),decimal,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Riboflavin  ,Riboflavin (mg/100 g),decimal,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Niacin,Niacin (mg/100 g) ,decimal,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Panto_acid,Pantothenic acid (mg/100 g),decimal,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Vit_B6,Vitamin B6 (mg/100 g),decimal,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,"Folate_Tot
+",Folate total (µg/100 g),numeric,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Folic_acid,Folic acid (µg/100 g),numeric,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Food_Folate,Food folate (µg/100 g),numeric,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Folate_DFE,Folate (µg dietary folate equivalents/100 g),numeric,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Choline_Tot,Choline total (mg/100 g),numeric,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Vit_B12,Vitamin B12 (µg/100 g),decimal,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Vit_A_IU,Vitamin A (IU/100 g),numeric,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Vit_A_RAE,Vitamin A (µg retinol activity equivalents/100g),numeric,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Retinol,Retinol (µg/100 g),numeric,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Alpha_Carot,Alpha-carotene (µg/100 g),numeric,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Beta_Carot,Beta-carotene (µg/100 g),numeric,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Beta_Crypt,Beta-cryptoxanthin (µg/100 g),numeric,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Lycopene,Lycopene (µg/100 g),numeric,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Lut+Zea,Lutein+zeazanthin (µg/100 g),numeric,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Vit_E,Vitamin E (alpha-tocopherol) (mg/100 g),decimal,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Vit_D_mcg,Vitamin D (µg/100 g),decimal,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Vit_D_IU,Vitamin D (IU/100 g),numeric,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Vit_K,Vitamin K (phylloquinone) (µg/100 g),decimal,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,FA_Sat,Saturated fatty acid (g/100 g),decimal,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,FA_Mono,Monounsaturated fatty acids (g/100 g),decimal,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,FA_Poly,Polyunsaturated fatty acids (g/100 g),decimal,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Cholestrl,Cholesterol (mg/100 g),decimal,10,,n,y
+Abbreviated file,ABBREV,ASCII flat file,GmWt_1, First household weight for this item from the Weight file.,decimal,9,,n,y
+Abbreviated file,ABBREV,ASCII flat file,GmWt_Desc1,Description of household weight number 1.,character,120,,n,y
+Abbreviated file,ABBREV,ASCII flat file,GmWt_2,Second household weight for this item from the Weight file.,decimal,9,,n,y
+Abbreviated file,ABBREV,ASCII flat file,GmWt_Desc2,Description of household weight number 2.,character,120,,n,y
+Abbreviated file,ABBREV,ASCII flat file,Refuse_Pct,Percent refuse.,numeric,2,0 to 99,n,y
