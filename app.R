@@ -43,7 +43,7 @@ ui <- dashboardPage(
         uiOutput("portion_ui"),
         actionButton(inputId="add_food",label="Add Food"),
         
-        actionButton(inputId="remove_food",label="Remove Food")
+        actionButton(inputId="remove_food",label="Remove All Food")
     ),
     
     dashboardBody(
@@ -70,6 +70,9 @@ ui <- dashboardPage(
                         
                         ###ggplot, stacked bars to show the contribution of different food items to nutritional value
                         plotOutput("nutrient_plot")
+                    ),
+                    box(title="Remove Food",
+                        uiOutput("remove_food_ui")
                     )
                 )
             ),
@@ -112,6 +115,10 @@ server <- function(input, output) {
             sessionVars$cart = rbind(sessionVars$cart,add_item)
         }
     }) 
+    
+    observeEvent(input$remove_food, {
+        sessionVars$cart$Food = data.table(Index=numeric(),Food=character(),Quantity=integer(),Unit=character())
+    })
     
     output$portion_ui = renderUI(selectInput(inputId="food_units",label="Portion Size",choices=c("100 grams",unlist(ds[Shrt_Desc==input$search,c(GmWt_Desc1,GmWt_Desc2)]))))
     
@@ -180,12 +187,69 @@ server <- function(input, output) {
     })
     
     nutrition_tall = reactive({
-      tall = data.table(nutrition())
-      tall[,Food_and_Quantity:=paste(Quantity,"\"",Unit,"\"",Food)]
-      tall[,c("Quantity","Unit","Food"):=NULL]
-      setcolorder(tall,c(ncol(tall),1:(ncol(tall)-1)))
-      t(tall)
+        tall = data.table(nutrition())
+        tall[,Food_and_Quantity:=paste0(Quantity," \"",Unit,"\" ",Food)]
+        tall[,c("Quantity","Unit","Food"):=NULL]
+        
+        ###Create buttons to remove individual items
+        # sapply(1:nrow(tall),function(x){
+        #     tall[x,Remove_Item:=actionButton(paste("remove",x,sep="_"),paste("Remove Item",x))]
+        #     observeEvent(input[[paste0("remove_",x)]],{sessionVars$cart = sessionVars$cart[-x]},ignoreInit=T,once=T)
+        #   
+        # })
+        # ###Quantity does not immediately update when adding something already in the cart
+        
+        
+        #setcolorder(tall,c(ncol(tall)-1,ncol(tall),1:(ncol(tall)-2)))
+        setcolorder(tall,c(ncol(tall),1:(ncol(tall)-1)))
+        tall = cbind(data.table(Row_Content=names(tall)),data.table(t(tall)))
+        setnames(tall,2:ncol(tall),paste("Item",1:(ncol(tall)-1),sep="_"))
+        
+        tall
+                
+        # sapply(1:ncol(tall),function(x){
+        #     
+        #     tall[x,Remove_Item:=actionButton(paste("remove",x,sep="_"),paste("Remove Item",x))]
+        #     observeEvent(input[[paste0("remove_",x)]],{sessionVars$cart = sessionVars$cart[-x]},ignoreInit=T,once=T)
+        #   
+        # })
     })
+    
+    
+    remove_food_observers = list()
+    
+    output$remove_food_ui = renderUI({
+        buttons = as.list(1:nrow(sessionVars$cart))
+        buttons = lapply(buttons,function(x) {
+            bt_name = sessionVars$cart[x,paste("remove",Food,sep="_")] 
+            
+            if(is.null(remove_food_observers[[bt_name]])) {
+                remove_food_observers[[bt_name]] <<- observeEvent(input[[bt_name]],{
+                    sessionVars$cart = sessionVars$cart[!Food%in%gsub("^remove_","",bt_name)]
+                })
+            }
+            actionButton(bt_name,paste0("Remove Item ",x))
+            
+        })
+    })
+    
+    # remove_food_buttons =  reactive({
+    #     sapply(1:nrow(sessionVars$cart),function(x){
+    #         actionButton(paste0("remove_",sessionVars$cart[x,Food]),paste("Item",x,sep="_"))
+    #     })
+    # })
+    # 
+    # food_button_observers
+    # 
+    # output$food_buttons = renderUI(
+    #     remove_food_buttons()
+    # )
+    
+    #observeEvent()
+    
+    # observe({
+    #     
+    # })
     
     nutrition_long = reactive({
         print("nutrition()")
@@ -198,7 +262,8 @@ server <- function(input, output) {
     })
     
     
-    output$nutrient_table = renderTable(nutrition())
+    #output$nutrient_table = renderTable(nutrition())
+    output$nutrient_table = renderTable(nutrition_tall())
     output$nutrient_plot = renderPlot(ggplot(nutrition_long(),aes(x=Nutrient,y=Value))+geom_bar(aes(fill=Food),stat="identity")+theme(axis.text.x=element_text(angle=60,vjust=.25,hjust=.2)))
     
 }
