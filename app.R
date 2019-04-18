@@ -28,7 +28,8 @@ ui <- dashboardPage(
     dashboardSidebar(
         sidebarMenu(
             menuItem("Main",tabName="menu"),
-            menuItem("Additional Options",tabName="options")
+            menuItem("Additional Options",tabName="options"),
+            menuItem("Nutrition Facts",tabName="nutrition_table")
             #sidebarSearchForm(textId = "search2",buttonId="search2_button",label="Search...")
         ),
 
@@ -65,7 +66,10 @@ ui <- dashboardPage(
                     box(title="Nutrition Data",
                         
                         ###Totals for key macronutrients
-                        tableOutput("nutrient_table"),
+                        valueBoxOutput("calories"),
+                        valueBoxOutput("fats"),
+                        valueBoxOutput("carbs"),
+                        valueBoxOutput("protein"),
                         
                         
                         ###ggplot, stacked bars to show the contribution of different food items to nutritional value
@@ -92,7 +96,11 @@ ui <- dashboardPage(
                         )
                       )
                   )
-              )    
+              ),
+              tabItem(tabName="nutrition_table",
+                  
+                  tableOutput("nutrient_table")
+              )
           )
     )
 )
@@ -180,39 +188,41 @@ server <- function(input, output) {
                 ds[sessionVars$cart[x,Index],GmWt_2]/100
             }
         })
-        
-        
-        cbind(sessionVars$cart[,.(Food,Quantity,Unit)],ds[sessionVars$cart[,Index],mget(c(input$nutrients_1,input$nutrients_2))]*multiplier)
-        
+        #cbind(sessionVars$cart[,.(Food,Quantity,Unit)],ds[sessionVars$cart[,Index],mget(c(input$nutrients_1,input$nutrients_2))]*multiplier)
+        cbind(sessionVars$cart[,.(Food,Quantity,Unit)],ds[sessionVars$cart[,Index],mget(c(nutrient_list1,nutrient_list2))]*multiplier)
     })
     
+    nutrition_select = reactive({
+        nutrition()[,mget(c("Food","Quantity","Unit",input$nutrients_1,input$nutrients_2))]
+    })
+    
+    output$calories = renderValueBox({
+        valueBox(value=nutrition()[,sum(Energ_Kcal)],subtitle="Calories")
+    })
+    output$fats = renderValueBox({
+        valueBox(nutrition()[,sum(`Lipid_Tot_(g)`)],subtitle="Total Fat")
+    })
+    output$carbs = renderValueBox({
+        valueBox(nutrition()[,sum(`Carbohydrt_(g)`)],subtitle="Carbs")
+    })
+    output$protein = renderValueBox({
+        valueBox(nutrition()[,sum(`Protein_(g)`)],subtitle="Protein")
+    })
+    
+    
     nutrition_tall = reactive({
-        tall = data.table(nutrition())
+        tall = data.table(nutrition_select())
         tall[,Food_and_Quantity:=paste0(Quantity," \"",Unit,"\" ",Food)]
         tall[,c("Quantity","Unit","Food"):=NULL]
         
-        ###Create buttons to remove individual items
-        # sapply(1:nrow(tall),function(x){
-        #     tall[x,Remove_Item:=actionButton(paste("remove",x,sep="_"),paste("Remove Item",x))]
-        #     observeEvent(input[[paste0("remove_",x)]],{sessionVars$cart = sessionVars$cart[-x]},ignoreInit=T,once=T)
-        #   
-        # })
-        # ###Quantity does not immediately update when adding something already in the cart
+        ###Quantity does not immediately update when adding something already in the cart
         
-        
-        #setcolorder(tall,c(ncol(tall)-1,ncol(tall),1:(ncol(tall)-2)))
         setcolorder(tall,c(ncol(tall),1:(ncol(tall)-1)))
         tall = cbind(data.table(Row_Content=names(tall)),data.table(t(tall)))
         setnames(tall,2:ncol(tall),paste("Item",1:(ncol(tall)-1),sep="_"))
         
         tall
                 
-        # sapply(1:ncol(tall),function(x){
-        #     
-        #     tall[x,Remove_Item:=actionButton(paste("remove",x,sep="_"),paste("Remove Item",x))]
-        #     observeEvent(input[[paste0("remove_",x)]],{sessionVars$cart = sessionVars$cart[-x]},ignoreInit=T,once=T)
-        #   
-        # })
     })
     
     
@@ -232,33 +242,16 @@ server <- function(input, output) {
             
         })
     })
-    
-    # remove_food_buttons =  reactive({
-    #     sapply(1:nrow(sessionVars$cart),function(x){
-    #         actionButton(paste0("remove_",sessionVars$cart[x,Food]),paste("Item",x,sep="_"))
-    #     })
-    # })
-    # 
-    # food_button_observers
-    # 
-    # output$food_buttons = renderUI(
-    #     remove_food_buttons()
-    # )
-    
-    #observeEvent()
-    
-    # observe({
-    #     
-    # })
+
     
     nutrition_long = reactive({
-        print("nutrition()")
-        print(nutrition())
+        # print("nutrition()")
+        # print(nutrition())
+        # 
+        # print("cart")
+        # print(sessionVars$cart)
 
-        print("cart")
-        print(sessionVars$cart)
-
-        melt(nutrition(),id.vars=c("Food","Quantity","Unit"),variable.name="Nutrient",value.name="Value")
+        melt(nutrition_select(),id.vars=c("Food","Quantity","Unit"),variable.name="Nutrient",value.name="Value")
     })
     
     
