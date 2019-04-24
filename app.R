@@ -177,6 +177,8 @@ server <- function(input, output) {
     
     nutrition = reactive({
         #ind = which(ds$Shrt_Desc%in%cart$Food)
+      
+        input$add_food
         req(nrow(sessionVars$cart)>0)
         
         ###The nutritional data from the USDA records the nutritional content of 100 grams of each food
@@ -189,7 +191,7 @@ server <- function(input, output) {
             }
         })
         #cbind(sessionVars$cart[,.(Food,Quantity,Unit)],ds[sessionVars$cart[,Index],mget(c(input$nutrients_1,input$nutrients_2))]*multiplier)
-        cbind(sessionVars$cart[,.(Food,Quantity,Unit)],ds[sessionVars$cart[,Index],mget(c(nutrient_list1,nutrient_list2))]*multiplier)
+        cbind(sessionVars$cart[,.(Food,Quantity,Unit)],ds[sessionVars$cart[,Index],mget(c(nutrient_list1,nutrient_list2))]*multiplier*sessionVars$cart$Quantity)
     })
     
     nutrition_select = reactive({
@@ -197,33 +199,33 @@ server <- function(input, output) {
     })
     
     output$calories = renderValueBox({
-        valueBox(value=nutrition()[,sum(Energ_Kcal)],subtitle="Calories")
+        valueBox(value=round(nutrition()[,sum(Energ_Kcal)]),subtitle="Calories",color="navy")
     })
     output$fats = renderValueBox({
-        valueBox(nutrition()[,sum(`Lipid_Tot_(g)`)],subtitle="Total Fat")
+        valueBox(round(nutrition()[,sum(`Lipid_Tot_(g)`)]),subtitle="Total Fat",color="navy")
     })
     output$carbs = renderValueBox({
-        valueBox(nutrition()[,sum(`Carbohydrt_(g)`)],subtitle="Carbs")
+        valueBox(round(nutrition()[,sum(`Carbohydrt_(g)`)]),subtitle="Carbs",color="navy")
     })
     output$protein = renderValueBox({
-        valueBox(nutrition()[,sum(`Protein_(g)`)],subtitle="Protein")
+        valueBox(round(nutrition()[,sum(`Protein_(g)`)]),subtitle="Protein",color="navy")
     })
     
     
-    nutrition_tall = reactive({
-        tall = data.table(nutrition_select())
-        tall[,Food_and_Quantity:=paste0(Quantity," \"",Unit,"\" ",Food)]
-        tall[,c("Quantity","Unit","Food"):=NULL]
-        
-        ###Quantity does not immediately update when adding something already in the cart
-        
-        setcolorder(tall,c(ncol(tall),1:(ncol(tall)-1)))
-        tall = cbind(data.table(Row_Content=names(tall)),data.table(t(tall)))
-        setnames(tall,2:ncol(tall),paste("Item",1:(ncol(tall)-1),sep="_"))
-        
-        tall
-                
-    })
+    # nutrition_tall = reactive({
+    #     tall = data.table(nutrition_select())
+    #     tall[,Food_and_Quantity:=paste0(Quantity," \"",Unit,"\" ",Food)]
+    #     tall[,c("Quantity","Unit","Food"):=NULL]
+    #     
+    #     ###Quantity does not immediately update when adding something already in the cart
+    #     
+    #     setcolorder(tall,c(ncol(tall),1:(ncol(tall)-1)))
+    #     tall = cbind(data.table(Row_Content=names(tall)),data.table(t(tall)))
+    #     setnames(tall,2:ncol(tall),paste("Item",1:(ncol(tall)-1),sep="_"))
+    #     
+    #     tall
+    #             
+    # })
     
     
     remove_food_observers = list()
@@ -244,20 +246,37 @@ server <- function(input, output) {
     })
 
     
-    nutrition_long = reactive({
-        # print("nutrition()")
-        # print(nutrition())
-        # 
-        # print("cart")
-        # print(sessionVars$cart)
-
-        melt(nutrition_select(),id.vars=c("Food","Quantity","Unit"),variable.name="Nutrient",value.name="Value")
-    })
+    # nutrition_long = reactive({
+    #     # print("nutrition()")
+    #     # print(nutrition())
+    #     # 
+    #     # print("cart")
+    #     # print(sessionVars$cart)
+    # 
+    #     melt(nutrition_select(),id.vars=c("Food","Quantity","Unit"),variable.name="Nutrient",value.name="Value")
+    # })
     
     
     #output$nutrient_table = renderTable(nutrition())
-    output$nutrient_table = renderTable(nutrition_tall())
-    output$nutrient_plot = renderPlot(ggplot(nutrition_long(),aes(x=Nutrient,y=Value))+geom_bar(aes(fill=Food),stat="identity")+theme(axis.text.x=element_text(angle=60,vjust=.25,hjust=.2)))
+    output$nutrient_table = renderTable({
+        tall = data.table(nutrition_select())
+        tall[,Food_and_Quantity:=paste0(Quantity," \"",Unit,"\" ",Food)]
+        tall[,c("Quantity","Unit","Food"):=NULL]
+      
+        ###Quantity does not immediately update when adding something already in the cart
+      
+        setcolorder(tall,c(ncol(tall),1:(ncol(tall)-1)))
+        tall = cbind(data.table(Row_Content=names(tall)),data.table(t(tall)))
+        setnames(tall,2:ncol(tall),paste("Item",1:(ncol(tall)-1),sep="_"))
+      
+        tall
+      
+        #nutrition_tall()
+    })
+    output$nutrient_plot = renderPlot({
+        nutrition_long = melt(nutrition_select(),id.vars=c("Food","Quantity","Unit"),variable.name="Nutrient",value.name="Value")
+        ggplot(nutrition_long,aes(x=Nutrient,y=Value))+geom_bar(aes(fill=Food),stat="identity")+theme(axis.text.x=element_text(angle=60,vjust=.25,hjust=.2))
+    })
     
 }
 
