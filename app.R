@@ -63,20 +63,23 @@ ui <- dashboardPage(
                 ),
                 
                 fluidRow(
-                    box(title="Nutrition Data",
-                        
-                        ###Totals for key macronutrients
-                        valueBoxOutput("calories"),
-                        valueBoxOutput("fats"),
-                        valueBoxOutput("carbs"),
-                        valueBoxOutput("protein"),
-                        
-                        
-                        ###ggplot, stacked bars to show the contribution of different food items to nutritional value
-                        plotOutput("nutrient_plot")
-                    ),
-                    box(title="Remove Food",
-                        uiOutput("remove_food_ui")
+                    tabBox(width=12,
+                        tabPanel(title="Key Metrics and Graph",
+                                    
+                            ###Totals for key macronutrients
+                            valueBoxOutput("calories",width=3),
+                            valueBoxOutput("fats",width=3),
+                            valueBoxOutput("carbs",width=3),
+                            valueBoxOutput("protein",width=3),
+                                    
+                                    
+                            ###ggplot, stacked bars to show the contribution of different food items to nutritional value
+                            plotOutput("nutrient_plot")
+                        ),
+                        tabPanel(title="Nutrition Table and Options",
+                            tableOutput("nutrient_table"),
+                            uiOutput("remove_food_ui")
+                        )
                     )
                 )
             ),
@@ -94,14 +97,10 @@ ui <- dashboardPage(
                                              selected=""
                             )
                         )
-                      )
-                  )
-              ),
-              tabItem(tabName="nutrition_table",
-                  
-                  tableOutput("nutrient_table")
-              )
-          )
+                    )
+                )
+            )
+        )
     )
 )
 
@@ -231,6 +230,7 @@ server <- function(input, output) {
     remove_food_observers = list()
     
     output$remove_food_ui = renderUI({
+        req(nrow(sessionVars$cart)>0)
         buttons = as.list(1:nrow(sessionVars$cart))
         buttons = lapply(buttons,function(x) {
             bt_name = sessionVars$cart[x,paste("remove",Food,sep="_")] 
